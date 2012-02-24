@@ -1,0 +1,50 @@
+#!/usr/bin/env python
+# -*- coding=utf-8 -*-
+# 
+# Copyright © 2012 Jude Robinson (dotcode at gmail dot com | @dotcode)
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+from BeautifulSoup import BeautifulSoup
+import urllib2
+import re
+import datetime
+
+now = datetime.datetime.now()
+
+page = urllib2.urlopen('http://eat.st/kings-cross/')
+soup = BeautifulSoup(page)
+
+# find the first date block (which is always the next eat st occurrence)
+# The date is held inside a div.heading-blue
+firstDateHeading = soup.find('div', 'heading-blue')
+date = re.sub('^[^0-9]+', '', firstDateHeading.contents[0].string)
+day = re.search('^[0-9]+', date)
+monthYear = re.search('[a-zA-Z]+ [0-9]+$', date)
+firstDate = day.group(0) + ' ' + monthYear.group(0)
+
+# see if that first date matches today's date
+if now.strftime('%d %b %Y') == firstDate:
+	for item in firstDateHeading.findNextSiblings('div'):
+		if item['class'] != 'altText':
+			break
+		if re.search('hot[ -]?dogs?', item.find('h3').find('a').string, re.IGNORECASE):
+			hotdogs = True
+			break
+		else:
+			hotdogs = False		
+	if hotdogs:
+		print 'Yes! there are fucking hot-dogs at King\'s Cross today.'
+	else:
+		print 'Damn. There are no fucking hot-dogs at King\'s Cross today.'
