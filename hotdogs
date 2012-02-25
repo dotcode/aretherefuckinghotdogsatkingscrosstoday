@@ -22,6 +22,7 @@ import re
 import datetime
 
 now = datetime.datetime.now()
+hotdogs = ''
 
 page = urllib2.urlopen('http://eat.st/kings-cross/')
 soup = BeautifulSoup(page)
@@ -44,7 +45,7 @@ if now.strftime('%d %b %Y') == firstDate:
 			break
 		else:
 			hotdogs = False		
-	if hotdogs:
-		print 'Yes! there are fucking hot-dogs at King\'s Cross today.'
-	else:
-		print 'Damn. There are no fucking hot-dogs at King\'s Cross today.'
+if hotdogs:
+	print 'Yes! there are fucking hot-dogs at King\'s Cross today.'
+else:
+	print 'Damn. There are no fucking hot-dogs at King\'s Cross today.'
